@@ -56,7 +56,7 @@ export default function FeaturesTab() {
             <div>
               <span className="text-bolt-elements-textPrimary">Use Context Optimization</span>
               <p className="text-sm text-bolt-elements-textSecondary" style={{ fontSize: '0.75rem', lineHeight: '1rem', color: '#737373' }}>
-                Redacts file contents from chat and puts the latest file contents on the system prompt.
+                Redacts file contents from chat and puts the latest file contents in the system prompt.
               </p>
             </div>
             <Switch
