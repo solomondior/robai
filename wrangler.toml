@@ -3,8 +3,3 @@ name = "bolt"
 compatibility_flags = ["nodejs_compat"]
 compatibility_date = "2024-07-01"
 send_metrics = false
-
-# Route all requests to the Remix app
-[routes]
-include = ["/*"]
-main = "./functions/[[path]].ts"
