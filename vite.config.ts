@@ -34,15 +34,7 @@ export default defineConfig((config) => {
       nodePolyfills({
         include: ['path', 'buffer', 'process'],
       }),
-      remixVitePlugin({
-        future: {
-          v3_fetcherPersist: true,
-          v3_relativeSplatPath: true,
-          v3_throwAbortReason: true,
-          v3_lazyRouteDiscovery: true
-        },
-        serverModuleFormat: 'esm',
-      }),
+      remixVitePlugin(),
       UnoCSS(),
       tsconfigPaths(),
       chrome129IssuePlugin(),
