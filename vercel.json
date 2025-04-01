@@ -1,6 +1,6 @@
 {
   "framework": "remix",
-  "buildCommand": "pnpm exec remix vite:build",
+  "buildCommand": "node node_modules/@remix-run/dev/dist/cli.js build",
   "installCommand": "pnpm install --frozen-lockfile",
   "regions": ["iad1"],
   "headers": [
