@@ -258,14 +258,10 @@ export function RoadmapSection() {
               ></div>
               
               <div 
-                className={`p-6 rounded-lg border transform transition-all duration-700 ${
-                  visibleItems.includes(index) 
-                    ? 'opacity-100 translate-y-0 scale-100' 
-                    : 'opacity-0 translate-y-10 scale-95'
-                } ${
-                  hoveredItem === index 
-                    ? `shadow-[0_0_20px_${isLightMode ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.2)'}] scale-[1.02]` 
-                    : `hover:shadow-[0_0_12px_${isLightMode ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.15)'}] hover:scale-[1.01]`
+                className={`relative mb-8 rounded-xl p-6 backdrop-blur-md transition-transform duration-300 ${
+                  hoveredItem === index
+                  ? `shadow-[0_0_20px_rgba(${isLightMode ? '0,0,0,0.1' : '255,255,255,0.2'})] scale-[1.02]`
+                  : `hover:shadow-[0_0_12px_rgba(${isLightMode ? '0,0,0,0.05' : '255,255,255,0.15'})] hover:scale-[1.01]`
                 }`}
                 style={{
                   backdropFilter: 'blur(8px)',

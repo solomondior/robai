@@ -1,4 +1,4 @@
-import { cloudflareDevProxyVitePlugin as remixCloudflareDevProxy, vitePlugin as remixVitePlugin } from '@remix-run/dev';
+import { vitePlugin as remixVitePlugin } from '@remix-run/dev';
 import UnoCSS from 'unocss/vite';
 import { defineConfig, type ViteDevServer } from 'vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
@@ -18,24 +18,22 @@ const getGitHash = () => {
   }
 };
 
-
-
-
 export default defineConfig((config) => {
   return {
     define: {
       __COMMIT_HASH: JSON.stringify(getGitHash()),
       __APP_VERSION: JSON.stringify(process.env.npm_package_version),
-      // 'process.env': JSON.stringify(process.env)
     },
     build: {
       target: 'esnext',
+      rollupOptions: {
+        external: ['@emotion/is-prop-valid']
+      }
     },
     plugins: [
       nodePolyfills({
         include: ['path', 'buffer', 'process'],
       }),
-      config.mode !== 'test' && remixCloudflareDevProxy(),
       remixVitePlugin({
         future: {
           v3_fetcherPersist: true,
@@ -43,6 +41,7 @@ export default defineConfig((config) => {
           v3_throwAbortReason: true,
           v3_lazyRouteDiscovery: true
         },
+        serverModuleFormat: 'esm',
       }),
       UnoCSS(),
       tsconfigPaths(),
