@@ -92,7 +92,7 @@ Interested in maintaining and growing the project? Fill out our [Contributor App
      - Debug level: `VITE_LOG_LEVEL=debug`  
      - Context size: `DEFAULT_NUM_CTX=32768`  
 
-**Note**: Never commit your `.env.local` file to version control. It’s already in `.gitignore`.
+**Note**: Never commit your `.env.local` file to version control. It's already in `.gitignore`.
 
 ### 2️⃣ Run Development Server  
 ```bash
@@ -118,6 +118,35 @@ pnpm test
 pnpm run deploy
 ```
 Ensure you have required permissions and that Wrangler is configured.
+
+#### Cloudflare Pages Deployment Setup
+
+1. **Install and Configure Wrangler CLI**:
+   ```bash
+   npm install -g wrangler
+   wrangler login
+   ```
+
+2. **Pre-deployment Check**:
+   Make sure your project builds correctly:
+   ```bash
+   pnpm run build
+   ```
+
+3. **Deploy to Cloudflare Pages**:
+   ```bash
+   pnpm run deploy
+   ```
+
+4. **Configure Environment Variables (First Deployment)**:
+   After first deployment, set up environment variables in the Cloudflare Dashboard:
+   - Go to Cloudflare Dashboard → Pages → Your Project → Settings → Environment Variables
+   - Add all required API keys and configuration from your .env.local file
+
+5. **Verify Deployment**:
+   Check that your application is running correctly on the provided Cloudflare Pages URL
+
+**Note**: For custom domains, add them via the Cloudflare Pages dashboard after your first deployment.
 
 ---
 

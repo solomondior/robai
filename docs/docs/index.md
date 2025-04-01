@@ -1,5 +1,5 @@
 # Welcome to bolt diy
-bolt.diy allows you to choose the LLM that you use for each prompt! Currently, you can use OpenAI, Anthropic, Ollama, OpenRouter, Gemini, LMStudio, Mistral, xAI, HuggingFace, DeepSeek, or Groq models - and it is easily extended to use any other model supported by the Vercel AI SDK! See the instructions below for running this locally and extending it to include more models.
+bolt.diy allows you to choose the LLM that you use for each prompt! Currently, you can use OpenAI, Anthropic, Ollama, OpenRouter, Gemini, LMStudio, Mistral, xAI, HuggingFace, DeepSeek, or Groq models - and it is easily extended to use any other model supported by the AI SDK! See the instructions below for running this locally and extending it to include more models.
 
 ## Table of Contents
 - [Join the community!](#join-the-community)
@@ -97,7 +97,7 @@ ANTHROPIC_API_KEY=XXX
 
 Once you've set your keys, you can proceed with running the app. You will set these keys up during the initial setup, and you can revisit and update them later after the app is running.
 
-**Note**: Never commit your `.env.local` file to version control. It’s already included in the `.gitignore`.
+**Note**: Never commit your `.env.local` file to version control. It's already included in the `.gitignore`.
 
 #### 2. Configure API Keys Directly in the Application
 
@@ -211,15 +211,38 @@ When you add a new model to the MODEL_LIST array, it will immediately be availab
 ---
 
 ## Available Scripts
+The project includes several scripts to help with development and deployment:
 
-- `pnpm run dev`: Starts the development server.
-- `pnpm run build`: Builds the project.
-- `pnpm run start`: Runs the built application locally using Wrangler Pages. This script uses `bindings.sh` to set up necessary bindings so you don't have to duplicate environment variables.
-- `pnpm run preview`: Builds the project and then starts it locally, useful for testing the production build. Note, HTTP streaming currently doesn't work as expected with `wrangler pages dev`.
-- `pnpm test`: Runs the test suite using Vitest.
-- `pnpm run typecheck`: Runs TypeScript type checking.
-- `pnpm run typegen`: Generates TypeScript types using Wrangler.
-- `pnpm run deploy`: Builds the project and deploys it to Cloudflare Pages.
+- **`pnpm run dev`**: Starts the development server
+- **`pnpm run build`**: Builds the project
+- **`pnpm run start`**: Runs the built application locally using Wrangler Pages
+- **`pnpm run deploy`**: Deploys the project to Cloudflare Pages
+- **`pnpm test`**: Runs the test suite
+- **`pnpm run lint:fix`**: Automatically fixes linting issues
+
+### Deploying to Cloudflare Pages
+To deploy the application to Cloudflare Pages:
+
+1. Install Wrangler CLI globally:
+   ```bash
+   npm install -g wrangler
+   ```
+
+2. Authenticate with Cloudflare:
+   ```bash
+   wrangler login
+   ```
+
+3. Build and deploy:
+   ```bash
+   pnpm run deploy
+   ```
+
+4. After the first deployment, set up environment variables in the Cloudflare Dashboard:
+   - Navigate to Cloudflare Dashboard → Pages → Your Project → Settings → Environment Variables
+   - Add all required API keys from your .env.local file
+
+For more detailed information on the migration to Cloudflare Pages, see the [CLOUDFLARE_MIGRATION.md](../CLOUDFLARE_MIGRATION.md) file.
 
 ---
 

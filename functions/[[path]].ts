@@ -5,5 +5,6 @@ import { createPagesFunctionHandler } from '@remix-run/cloudflare-pages';
 import * as serverBuild from '../build/server';
 
 export const onRequest = createPagesFunctionHandler({
+  // @ts-expect-error ServerBuild version mismatch between dependencies
   build: serverBuild as unknown as ServerBuild,
 });
