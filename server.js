@@ -1,3 +1,25 @@
+/**
+ * Vercel server adapter for Remix
+ */
+
+// Patch the module system to handle CommonJS/ESM incompatibilities
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+
+// Patch React DOM Server specifically
+globalThis.ReactDOMServer = require('react-dom/server');
+if (!globalThis.ReactDOMServer.renderToReadableStream) {
+  // For React 18+
+  try {
+    const ReactDOMServerBrowser = require('react-dom/server.browser');
+    if (ReactDOMServerBrowser.renderToReadableStream) {
+      globalThis.ReactDOMServer.renderToReadableStream = ReactDOMServerBrowser.renderToReadableStream;
+    }
+  } catch (e) {
+    console.warn('Could not load react-dom/server.browser', e);
+  }
+}
+
 import * as build from './build/server/index.js';
 import { createRequestHandler } from '@vercel/remix';
 

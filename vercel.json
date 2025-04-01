@@ -1,5 +1,5 @@
 {
-  "buildCommand": "remix vite:build",
+  "buildCommand": "remix vite:build && node build-patches.js",
   "framework": "remix",
   "installCommand": "pnpm install",
   "regions": ["iad1"],
