@@ -227,17 +227,29 @@ export class ActionRunner {
     await shell.ready();
 
     if (!shell || !shell.terminal || !shell.process) {
-      unreachable('Shell terminal not found');
+      logger.warn('Shell terminal not found or not properly initialized');
+      return; // Return silently instead of throwing an error
     }
 
-    const resp = await shell.executeCommand(this.runnerId.get(), action.content, () => {
-      logger.debug(`[${action.type}]:Aborting Action\n\n`, action);
-      action.abort();
-    });
-    logger.debug(`${action.type} Shell Response: [exit code:${resp?.exitCode}]`);
+    try {
+      const resp = await shell.executeCommand(this.runnerId.get(), action.content, () => {
+        logger.debug(`[${action.type}]:Aborting Action\n\n`, action);
+        action.abort();
+      });
+      
+      logger.debug(`${action.type} Shell Response: [exit code:${resp?.exitCode}]`);
 
-    if (resp?.exitCode != 0) {
-      throw new ActionCommandError(`Failed To Execute Shell Command`, resp?.output || 'No Output Available');
+      // Only throw an error for non-zero exit codes if the command was actually executed
+      if (resp?.exitCode !== 0 && resp?.exitCode !== -1) {
+        throw new ActionCommandError(`Failed To Execute Shell Command`, resp?.output || 'No Output Available');
+      }
+    } catch (error) {
+      // Only propagate ActionCommandError, handle other errors silently
+      if (error instanceof ActionCommandError) {
+        throw error;
+      }
+      
+      logger.warn(`Error executing shell command: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 

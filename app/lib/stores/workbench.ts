@@ -106,11 +106,12 @@ export class WorkbenchStore {
     this.#terminalStore.toggleTerminal(value);
   }
 
+  attachNexusTerminal(terminal: ITerminal) {
+    this.#terminalStore.attachNexusTerminal(terminal);
+  }
+
   attachTerminal(terminal: ITerminal) {
     this.#terminalStore.attachTerminal(terminal);
-  }
-  attachBoltTerminal(terminal: ITerminal) {
-    this.#terminalStore.attachBoltTerminal(terminal);
   }
 
   onTerminalResize(cols: number, rows: number) {

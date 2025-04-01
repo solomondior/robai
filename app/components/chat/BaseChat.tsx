@@ -307,11 +307,16 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
           <div className={classNames(styles.Chat, 'flex flex-col flex-grow lg:min-w-[var(--chat-min-width)] h-full')}>
             {!chatStarted && (
               <div id="intro" className="mt-[16vh] max-w-chat mx-auto text-center px-4 lg:px-0">
-                <h1 className="text-3xl lg:text-6xl font-bold text-bolt-elements-textPrimary mb-4 animate-fade-in">
-                  Where ideas begin
+                <img 
+                  src="/logo.gif" 
+                  alt="Nexus AI Logo" 
+                  className="w-24 h-24 lg:w-32 lg:h-32 mx-auto mb-8 animate-fade-in invert dark:invert-0"
+                />
+                <h1 className="text-3xl lg:text-6xl font-light tracking-wider dark:text-bolt-elements-textPrimary text-black mb-4 animate-fade-in font-mono uppercase">
+                  TRANSFORM IDEAS INTO REALITY
                 </h1>
-                <p className="text-md lg:text-xl mb-8 text-bolt-elements-textSecondary animate-fade-in animation-delay-200">
-                  Bring ideas to life in seconds or get help on existing projects.
+                <p className="text-md lg:text-xl mb-8 text-bolt-elements-textSecondary animate-fade-in animation-delay-200 tracking-wide">
+                  Build and enhance your projects
                 </p>
               </div>
             )}
@@ -373,10 +378,10 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                         gradientUnits="userSpaceOnUse"
                         gradientTransform="rotate(-45)"
                       >
-                        <stop offset="0%" stopColor="#b44aff" stopOpacity="0%"></stop>
-                        <stop offset="40%" stopColor="#b44aff" stopOpacity="80%"></stop>
-                        <stop offset="50%" stopColor="#b44aff" stopOpacity="80%"></stop>
-                        <stop offset="100%" stopColor="#b44aff" stopOpacity="0%"></stop>
+                        <stop offset="0%" stopColor="#ffffff" stopOpacity="0%"></stop>
+                        <stop offset="40%" stopColor="#ffffff" stopOpacity="80%"></stop>
+                        <stop offset="50%" stopColor="#ffffff" stopOpacity="80%"></stop>
+                        <stop offset="100%" stopColor="#ffffff" stopOpacity="0%"></stop>
                       </linearGradient>
                       <linearGradient id="shine-gradient">
                         <stop offset="0%" stopColor="white" stopOpacity="0%"></stop>
@@ -442,7 +447,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                     <textarea
                       ref={textareaRef}
                       className={classNames(
-                        'w-full pl-4 pt-4 pr-16 outline-none resize-none text-bolt-elements-textPrimary placeholder-bolt-elements-textTertiary bg-transparent text-sm',
+                        'w-full pl-4 pt-4 pr-16 outline-none resize-none dark:text-bolt-elements-textPrimary text-bolt-elements-prompt-textPrimary placeholder-bolt-elements-prompt-textTertiary bg-transparent text-sm',
                         'transition-all duration-200',
                         'hover:border-bolt-elements-focus',
                       )}
@@ -506,7 +511,7 @@ export const BaseChat = React.forwardRef<HTMLDivElement, BaseChatProps>(
                         minHeight: TEXTAREA_MIN_HEIGHT,
                         maxHeight: TEXTAREA_MAX_HEIGHT,
                       }}
-                      placeholder="How can Bolt help you today?"
+                      placeholder="How can I help you today?"
                       translate="no"
                     />
                     <ClientOnly>

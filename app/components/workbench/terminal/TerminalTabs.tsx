@@ -106,8 +106,8 @@ export const TerminalTabs = memo(() => {
                       )}
                       onClick={() => setActiveTerminal(index)}
                     >
-                      <div className="i-ph:terminal-window-duotone text-lg" />
-                      Bolt Terminal
+                      <div className="i-ph:terminal" />
+                      Nexus Terminal
                     </button>
                   ) : (
                     <React.Fragment>
@@ -156,7 +156,7 @@ export const TerminalTabs = memo(() => {
                   ref={(ref) => {
                     terminalRefs.current.push(ref);
                   }}
-                  onTerminalReady={(terminal) => workbenchStore.attachBoltTerminal(terminal)}
+                  onTerminalReady={(terminal) => workbenchStore.attachNexusTerminal(terminal)}
                   onTerminalResize={(cols, rows) => workbenchStore.onTerminalResize(cols, rows)}
                   theme={theme}
                 />

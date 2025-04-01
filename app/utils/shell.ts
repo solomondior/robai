@@ -97,45 +97,81 @@ export class BoltShell {
 
   async executeCommand(sessionId: string, command: string, abort?: () => void): Promise<ExecutionResult> {
     if (!this.process || !this.terminal) {
-      return undefined;
+      console.warn('Terminal or process not initialized, skipping command execution');
+      return { output: 'Terminal not ready', exitCode: -1 };
     }
 
     const state = this.executionState.get();
 
+    // If there's already an active execution, handle it gracefully
     if (state?.active && state.abort) {
-      state.abort();
-    }
-
-    /*
-     * interrupt the current execution
-     *  this.#shellInputStream?.write('\x03');
-     */
-    this.terminal.input('\x03');
-    await this.waitTillOscCode('prompt');
-
-    if (state && state.executionPrms) {
-      await state.executionPrms;
-    }
-
-    //start a new execution
-    this.terminal.input(command.trim() + '\n');
-
-    //wait for the execution to finish
-    const executionPromise = this.getCurrentExecutionResult();
-    this.executionState.set({ sessionId, active: true, executionPrms: executionPromise, abort });
-
-    const resp = await executionPromise;
-    this.executionState.set({ sessionId, active: false });
-
-    if (resp) {
       try {
-        resp.output = cleanTerminalOutput(resp.output);
+        state.abort();
       } catch (error) {
-        console.log('failed to format terminal output', error);
+        console.warn('Failed to abort previous command', error);
       }
     }
 
-    return resp;
+    try {
+      // Interrupt the current execution with a safety check
+      if (this.terminal && this.terminal.input) {
+        this.terminal.input('\x03');
+        await this.waitTillOscCode('prompt').catch(() => {
+          // If waiting for prompt times out, continue anyway
+          console.warn('Timeout waiting for prompt, continuing with command execution');
+        });
+      }
+
+      // Wait for any previous execution to complete
+      if (state && state.executionPrms) {
+        try {
+          await Promise.race([
+            state.executionPrms,
+            new Promise(resolve => setTimeout(resolve, 1000)) // 1 second timeout
+          ]);
+        } catch (error) {
+          console.warn('Error waiting for previous command to complete', error);
+        }
+      }
+
+      // Start a new execution with safety check
+      if (this.terminal && this.terminal.input) {
+        this.terminal.input(command.trim() + '\n');
+      } else {
+        return { output: 'Terminal input not available', exitCode: -1 };
+      }
+
+      // Wait for the execution to finish
+      const executionPromise = this.getCurrentExecutionResult();
+      this.executionState.set({ sessionId, active: true, executionPrms: executionPromise, abort });
+
+      // Add a timeout to prevent hanging
+      const resp = await Promise.race([
+        executionPromise,
+        new Promise<ExecutionResult>((resolve) => 
+          setTimeout(() => resolve({ output: 'Command execution timed out', exitCode: -1 }), 30000)
+        )
+      ]);
+      
+      this.executionState.set({ sessionId, active: false });
+
+      if (resp) {
+        try {
+          resp.output = cleanTerminalOutput(resp.output);
+        } catch (error) {
+          console.log('failed to format terminal output', error);
+        }
+      }
+
+      return resp;
+    } catch (error) {
+      console.error('Error executing command:', error);
+      this.executionState.set({ sessionId, active: false });
+      return { 
+        output: `Error executing command: ${error instanceof Error ? error.message : String(error)}`, 
+        exitCode: -1 
+      };
+    }
   }
 
   async newBoltShellProcess(webcontainer: WebContainer, terminal: ITerminal) {
@@ -203,25 +239,49 @@ export class BoltShell {
     }
 
     const tappedStream = this.#outputStream;
+    const startTime = Date.now();
+    const timeout = 10000; // 10 second timeout
 
     while (true) {
-      const { value, done } = await tappedStream.read();
+      try {
+        // Add a timeout for the read operation
+        const readPromise = tappedStream.read();
+        const timeoutPromise = new Promise<{value: string, done: boolean}>((_, reject) => {
+          setTimeout(() => {
+            if (Date.now() - startTime > timeout) {
+              reject(new Error(`Timeout waiting for OSC code: ${waitCode}`));
+            }
+          }, 1000); // Check every second
+        });
 
-      if (done) {
-        break;
-      }
+        // Race between the read operation and the timeout
+        const { value, done } = await Promise.race([readPromise, timeoutPromise]);
 
-      const text = value || '';
-      fullOutput += text;
+        if (done) {
+          break;
+        }
 
-      // Check if command completion signal with exit code
-      const [, osc, , , code] = text.match(/\x1b\]654;([^\x07=]+)=?((-?\d+):(\d+))?\x07/) || [];
+        const text = value || '';
+        fullOutput += text;
 
-      if (osc === 'exit') {
-        exitCode = parseInt(code, 10);
-      }
+        // Check if command completion signal with exit code
+        const [, osc, , , code] = text.match(/\x1b\]654;([^\x07=]+)=?((-?\d+):(\d+))?\x07/) || [];
 
-      if (osc === waitCode) {
+        if (osc === 'exit') {
+          exitCode = parseInt(code, 10);
+        }
+
+        if (osc === waitCode) {
+          break;
+        }
+
+        // Check for overall timeout
+        if (Date.now() - startTime > timeout) {
+          console.warn(`Timeout waiting for OSC code: ${waitCode}`);
+          break;
+        }
+      } catch (error) {
+        console.warn(`Error waiting for terminal output: ${error instanceof Error ? error.message : String(error)}`);
         break;
       }
     }

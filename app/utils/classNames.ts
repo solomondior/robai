@@ -5,7 +5,8 @@
  * @link http://jedwatson.github.io/classnames
  */
 
-type ClassNamesArg = undefined | string | Record<string, boolean> | ClassNamesArg[];
+export type ClassValue = string | number | boolean | undefined | null;
+export type ClassNamesArg = ClassValue | ClassValue[] | Record<string, any>;
 
 /**
  * A simple JavaScript utility for conditionally joining classNames together.
@@ -15,47 +16,31 @@ type ClassNamesArg = undefined | string | Record<string, boolean> | ClassNamesAr
  * should be included in the final class.
  */
 export function classNames(...args: ClassNamesArg[]): string {
-  let classes = '';
+  const classes: string[] = [];
 
   for (const arg of args) {
-    classes = appendClass(classes, parseValue(arg));
-  }
+    if (!arg) continue;
 
-  return classes;
-}
+    const argType = typeof arg;
 
-function parseValue(arg: ClassNamesArg) {
-  if (typeof arg === 'string' || typeof arg === 'number') {
-    return arg;
-  }
-
-  if (typeof arg !== 'object') {
-    return '';
-  }
-
-  if (Array.isArray(arg)) {
-    return classNames(...arg);
-  }
-
-  let classes = '';
-
-  for (const key in arg) {
-    if (arg[key]) {
-      classes = appendClass(classes, key);
+    if (argType === 'string' || argType === 'number') {
+      classes.push(arg.toString());
+    } else if (Array.isArray(arg)) {
+      if (arg.length) {
+        const inner = classNames(...arg);
+        if (inner) {
+          classes.push(inner);
+        }
+      }
+    } else if (argType === 'object') {
+      const objArg = arg as Record<string, unknown>;
+      for (const key in objArg) {
+        if (Object.prototype.hasOwnProperty.call(objArg, key) && objArg[key]) {
+          classes.push(key);
+        }
+      }
     }
   }
 
-  return classes;
-}
-
-function appendClass(value: string, newClass: string | undefined) {
-  if (!newClass) {
-    return value;
-  }
-
-  if (value) {
-    return value + ' ' + newClass;
-  }
-
-  return value + newClass;
+  return classes.join(' ');
 }

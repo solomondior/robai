@@ -4,6 +4,7 @@ import { IconButton } from '~/components/ui/IconButton';
 import { workbenchStore } from '~/lib/stores/workbench';
 import { PortDropdown } from './PortDropdown';
 import { ScreenshotSelector } from './ScreenshotSelector';
+import { NoPreviewAvailable } from './NoPreviewAvailable';
 
 type ResizeSide = 'left' | 'right' | null;
 
@@ -387,9 +388,7 @@ export const Preview = memo(() => {
               />
             </>
           ) : (
-            <div className="flex w-full h-full justify-center items-center bg-bolt-elements-background-depth-1 text-bolt-elements-textPrimary">
-              No preview available
-            </div>
+            <NoPreviewAvailable />
           )}
 
           {isDeviceModeOn && (

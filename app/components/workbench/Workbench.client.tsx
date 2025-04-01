@@ -275,6 +275,7 @@ export const Workbench = memo(({ chatStarted, isStreaming }: WorkspaceProps) => 
     )
   );
 });
+
 interface ViewProps extends HTMLMotionProps<'div'> {
   children: JSX.Element;
 }

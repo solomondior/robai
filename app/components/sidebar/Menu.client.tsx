@@ -151,7 +151,7 @@ export const Menu = () => {
         <div className="p-4 select-none">
           <a
             href="/"
-            className="flex gap-2 items-center bg-bolt-elements-sidebar-buttonBackgroundDefault text-bolt-elements-sidebar-buttonText hover:bg-bolt-elements-sidebar-buttonBackgroundHover rounded-md p-2 transition-theme mb-4"
+            className="flex gap-2 items-center bg-gray-500/10 text-gray-500 hover:bg-gray-500/20 rounded-md p-2 transition-theme mb-4"
           >
             <span className="inline-block i-bolt:chat scale-110" />
             Start new chat

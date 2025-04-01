@@ -1,3 +1,9 @@
 .xterm {
   padding: 1rem;
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+.xterm-viewport,
+.xterm-screen {
+  font-family: 'JetBrains Mono', monospace !important;
 }
