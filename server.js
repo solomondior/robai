@@ -4,6 +4,7 @@ import { createRequestHandler } from '@vercel/remix';
 // Polyfill for missing Cloudflare features
 globalThis.__REMIX_DEV_ORIGIN = 'https://localhost:3000';
 
+// Polyfill Cloudflare's caches API
 if (!globalThis.caches) {
   globalThis.caches = {
     default: {
@@ -17,6 +18,15 @@ if (!globalThis.caches) {
   };
 }
 
+// Simple KV store polyfill if used 
+const memoryKV = new Map();
+const kvPolyfill = {
+  get: async (key) => memoryKV.get(key) || null,
+  put: async (key, value) => memoryKV.set(key, value),
+  delete: async (key) => memoryKV.delete(key),
+  list: async () => ({ keys: Array.from(memoryKV.keys()).map(name => ({ name })) }),
+};
+
 // Load all environment variables from .env if needed
 import 'dotenv/config';
 
@@ -27,7 +37,10 @@ export default createRequestHandler({
     return {
       // Provide a compatibility layer for Cloudflare-specific code
       cloudflare: {
-        env: process.env,
+        env: {},  // Empty since we're using client-side keys
+        // Add any KV namespaces your app might be expecting
+        SESSIONS: kvPolyfill,
+        USER_DATA: kvPolyfill,
       },
     };
   },

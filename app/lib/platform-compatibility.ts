@@ -15,17 +15,29 @@ export function getPlatform() {
   return 'unknown';
 }
 
-// Get the environment variables regardless of platform
+// Since the app uses client-side API keys, this function serves mainly
+// as a compatibility layer for any code that might try to access
+// environment variables directly
 export function getEnvVar(name: string, context?: any): string | undefined {
-  // For Cloudflare
-  if (context?.cloudflare?.env && context.cloudflare.env[name]) {
-    return context.cloudflare.env[name];
-  }
-  
-  // For Vercel and others
-  if (typeof process !== 'undefined' && process.env[name]) {
-    return process.env[name];
-  }
-  
+  // For client-side API keys, we don't expect to find them in env variables
   return undefined;
+}
+
+// Polyfill for any Cloudflare-specific API calls
+export const cloudflareCompat = {
+  // KV namespace operations
+  getKVValue: async (namespace: string, key: string, context?: any): Promise<any> => {
+    if (context?.cloudflare?.[namespace]) {
+      return await context.cloudflare[namespace].get(key);
+    }
+    return null;
+  },
+  
+  setKVValue: async (namespace: string, key: string, value: any, context?: any): Promise<void> => {
+    if (context?.cloudflare?.[namespace]) {
+      await context.cloudflare[namespace].put(key, value);
+    }
+  },
+  
+  // Add other Cloudflare-specific APIs as needed
 } 

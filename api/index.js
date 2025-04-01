@@ -5,4 +5,7 @@ import { createRequestHandler } from '@vercel/remix';
 // but need to be explicitly set for Vercel
 process.env.REMIX_DEV_ORIGIN = 'http://localhost:3000';
 
-export default createRequestHandler({ build }); 
+export default createRequestHandler({ 
+  build,
+  mode: 'production'
+}); 
