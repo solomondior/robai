@@ -1,0 +1,7 @@
+{
+  "buildCommand": "remix vite:build",
+  "framework": "remix",
+  "installCommand": "pnpm install",
+  "regions": ["iad1"],
+  "outputDirectory": "build/client"
+} 
