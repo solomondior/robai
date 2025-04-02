@@ -33,7 +33,7 @@ async function run() {
         ? './functions/\\[\\[path\\]\\].ts' 
         : './functions/[[path]].ts';
         
-      const result = await execAsync(`npx wrangler deploy ${entryPoint} --config wrangler.toml`);
+      const result = await execAsync(`npx wrangler deploy ${entryPoint} --config wrangler.toml --name nexusai`);
       console.log('✅ Deployment output:');
       console.log(result.stdout);
       
@@ -50,6 +50,9 @@ async function run() {
       if (error.message.includes('Missing entry-point')) {
         console.error('The error is related to the entry point configuration.');
         console.error('Please check that the path to the function file is correct in both wrangler.toml and the deploy command.');
+      } else if (error.message.includes('provide a name')) {
+        console.error('The error is related to the Worker name not being specified.');
+        console.error('Please make sure the name is set in wrangler.toml or passed as --name parameter.');
       }
       
       process.exit(1);
