@@ -39,56 +39,75 @@ async function run() {
       console.warn('⚠️ Error copying function files:', copyError.message);
     }
 
-    console.log(`🚀 Deploying to Cloudflare as "${workerName}"...`);
-    try {
-      // Use the explicit path to the entry point
-      // On Windows, escape the square brackets
-      const entryPoint = isWindows 
-        ? './functions/\\[\\[path\\]\\].ts' 
-        : './functions/[[path]].ts';
-        
-      const result = await execAsync(`npx wrangler deploy ${entryPoint} --config wrangler.toml --name ${workerName}`);
-      console.log('✅ Deployment output:');
-      console.log(result.stdout);
+    // Try multiple deployment methods in sequence until one works
+    const deploymentMethods = [
+      // Method 1: Use the name from wrangler.toml with entry point
+      async () => {
+        console.log(`🚀 Trying deployment method 1: Using explicit entry point with name "${workerName}"...`);
+        const entryPoint = isWindows 
+          ? './functions/\\[\\[path\\]\\].ts' 
+          : './functions/[[path]].ts';
+        return await execAsync(`npx wrangler deploy ${entryPoint} --config wrangler.toml --name ${workerName}`);
+      },
       
-      if (result.stderr) {
-        console.warn('⚠️ Stderr output:');
-        console.warn(result.stderr);
+      // Method 2: Let wrangler figure out the entry point based on wrangler.toml
+      async () => {
+        console.log('🚀 Trying deployment method 2: Using wrangler.toml configuration...');
+        return await execAsync('npx wrangler deploy --config wrangler.toml');
+      },
+      
+      // Method 3: Just deploy the worker without specifying entry point or name
+      async () => {
+        console.log('🚀 Trying deployment method 3: Simple deploy...');
+        return await execAsync('npx wrangler deploy');
+      },
+      
+      // Method 4: Try Pages deployment instead
+      async () => {
+        console.log('🚀 Trying deployment method 4: Cloudflare Pages deployment...');
+        return await execAsync('npx wrangler pages deploy build/client --project-name nexusai');
       }
-      
-      console.log('🎉 Cloudflare deployment completed successfully!');
-    } catch (error) {
-      console.error('❌ Deployment failed:', error.message);
-      
-      // Provide helpful error analysis
-      if (error.message.includes('Missing entry-point')) {
-        console.error('The error is related to the entry point configuration.');
-        console.error('Please check that the path to the function file is correct in both wrangler.toml and the deploy command.');
-      } else if (error.message.includes('provide a name')) {
-        console.error('The error is related to the Worker name not being specified.');
-        console.error('Please make sure the name is set in wrangler.toml or passed as --name parameter.');
-      } else if (error.message.includes('must match the name of your Worker')) {
-        console.error('The name in wrangler.toml does not match the name of your Worker.');
-        console.error('Please either:');
-        console.error('1. Update the name in wrangler.toml to match your Worker name, or');
-        console.error('2. Use the correct Worker name in the deploy command');
+    ];
+    
+    let deploymentSucceeded = false;
+    let lastError = null;
+    
+    for (let i = 0; i < deploymentMethods.length; i++) {
+      try {
+        const result = await deploymentMethods[i]();
+        console.log(`✅ Deployment method ${i+1} succeeded!`);
+        console.log(result.stdout);
         
-        // Try alternative deployment approach
-        console.log('Attempting alternative deployment approach...');
-        try {
-          const altResult = await execAsync(`npx wrangler deploy --config wrangler.toml`);
-          console.log('✅ Alternative deployment output:');
-          console.log(altResult.stdout);
-          
-          if (altResult.stderr) {
-            console.warn('⚠️ Stderr output:');
-            console.warn(altResult.stderr);
-          }
-          
-          console.log('🎉 Alternative deployment completed successfully!');
-          return;
-        } catch (altError) {
-          console.error('❌ Alternative deployment failed:', altError.message);
+        if (result.stderr) {
+          console.warn('⚠️ Stderr output:');
+          console.warn(result.stderr);
+        }
+        
+        deploymentSucceeded = true;
+        break;
+      } catch (error) {
+        console.error(`❌ Deployment method ${i+1} failed:`, error.message);
+        lastError = error;
+      }
+    }
+    
+    if (deploymentSucceeded) {
+      console.log('🎉 Cloudflare deployment completed successfully!');
+    } else {
+      console.error('❌ All deployment methods failed.');
+      if (lastError) {
+        console.error('Last error:', lastError.message);
+        
+        // Provide helpful error analysis for the last error
+        if (lastError.message.includes('Missing entry-point')) {
+          console.error('The error is related to the entry point configuration.');
+          console.error('Please check that the path to the function file is correct in both wrangler.toml and the deploy command.');
+        } else if (lastError.message.includes('provide a name')) {
+          console.error('The error is related to the Worker name not being specified.');
+          console.error('Please make sure the name is set in wrangler.toml or passed as --name parameter.');
+        } else if (lastError.message.includes('must match the name of your Worker')) {
+          console.error('The name in wrangler.toml does not match the name of your Worker.');
+          console.error('Please update the name in wrangler.toml to match your Worker name.');
         }
       }
       
