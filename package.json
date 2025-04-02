@@ -7,7 +7,7 @@
   "type": "module",
   "version": "0.0.6",
   "scripts": {
-    "deploy": "NODE_ENV=production remix vite:build && wrangler pages deploy build/client --production",
+    "deploy": "NODE_ENV=production remix vite:build && node ./deploy-helper.js",
     "build": "NODE_ENV=production remix vite:build",
     "dev": "node pre-start.cjs  && remix vite:dev",
     "test": "vitest --run",
