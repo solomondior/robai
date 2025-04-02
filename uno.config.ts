@@ -232,7 +232,7 @@ export default defineConfig({
     },
     animation: {
       keyframes: {
-        'wave-pulse': '{0%, 100%{opacity:0.5},50%{opacity:0.8}}',
+        'wave-pulse': '{0%, 100%:{opacity:0.5;},50%:{opacity:0.8;}}',
       },
       durations: {
         'wave-pulse': '6s',

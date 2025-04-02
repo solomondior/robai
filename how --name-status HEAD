@@ -1,0 +1,3 @@
+[33m5246d16[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m Fix Node.js version configuration for deployment
+[33mc08c4d2[m Fix Node.js and pnpm versions in .tool-versions for deployment
+[33mfa26b77[m Migrate from Vercel to Cloudflare Pages deployment
