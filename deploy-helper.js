@@ -5,10 +5,21 @@ import { promises as fs } from 'fs';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import { platform } from 'os';
-import { parse } from 'toml';
 
 const execAsync = promisify(exec);
 const isWindows = platform() === 'win32';
+
+// Simple function to extract name from wrangler.toml without requiring the toml package
+async function extractNameFromWranglerToml(filePath) {
+  try {
+    const content = await fs.readFile(filePath, 'utf-8');
+    const nameMatch = content.match(/^\s*name\s*=\s*["']([^"']+)["']/m);
+    return nameMatch ? nameMatch[1] : null;
+  } catch (error) {
+    console.warn('⚠️ Error reading wrangler.toml:', error.message);
+    return null;
+  }
+}
 
 async function run() {
   console.log('📦 Starting Cloudflare deployment process...');
@@ -16,15 +27,12 @@ async function run() {
   try {
     // Read wrangler.toml to get the name
     let workerName = 'nexusai'; // Default name
-    try {
-      const wranglerConfig = await fs.readFile('./wrangler.toml', 'utf-8');
-      const parsedConfig = parse(wranglerConfig);
-      if (parsedConfig.name) {
-        workerName = parsedConfig.name;
-        console.log(`✅ Using Worker name from wrangler.toml: ${workerName}`);
-      }
-    } catch (configError) {
-      console.warn('⚠️ Could not read wrangler.toml, using default name:', configError.message);
+    const extractedName = await extractNameFromWranglerToml('./wrangler.toml');
+    if (extractedName) {
+      workerName = extractedName;
+      console.log(`✅ Using Worker name from wrangler.toml: ${workerName}`);
+    } else {
+      console.log(`ℹ️ Using default Worker name: ${workerName}`);
     }
 
     // Copy functions to the build directory to ensure they're available
