@@ -1,9 +1,8 @@
 #:schema node_modules/wrangler/config-schema.json
-name = "bolt"
+# Configuration for Cloudflare Pages
 compatibility_flags = ["nodejs_compat"]
 compatibility_date = "2024-07-01"
 send_metrics = false
-main = "index.js"
 
 # This is a Pages project - DO NOT ADD routes or main entry point
 # Deployment is handled through `wrangler pages deploy build/client`
