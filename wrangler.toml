@@ -4,6 +4,9 @@ compatibility_flags = ["nodejs_compat"]
 compatibility_date = "2024-07-01"
 send_metrics = false
 
+# Entry point for function execution
+main = "./functions/[[path]].ts"
+
 # This is a Pages project - DO NOT ADD routes or main entry point
 # Deployment is handled through `wrangler pages deploy build/client`
 # The functions/[[path]].ts file handles all routing for Pages Functions
