@@ -1,6 +1,6 @@
 #:schema node_modules/wrangler/config-schema.json
 # Configuration for Cloudflare Pages
-name = "bolt"
+name = "bol"
 compatibility_flags = ["nodejs_compat"]
 compatibility_date = "2024-07-01"
 send_metrics = false

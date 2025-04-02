@@ -26,7 +26,7 @@ async function run() {
   
   try {
     // Read wrangler.toml to get the name
-    let workerName = 'bolt'; // Default name
+    let workerName = 'bol'; // Default name
     const extractedName = await extractNameFromWranglerToml('./wrangler.toml');
     if (extractedName) {
       workerName = extractedName;
@@ -73,7 +73,7 @@ async function run() {
       // Method 4: Try Pages deployment instead
       async () => {
         console.log('🚀 Trying deployment method 4: Cloudflare Pages deployment...');
-        return await execAsync('npx wrangler pages deploy build/client --project-name bolt');
+        return await execAsync('npx wrangler pages deploy build/client --project-name bol');
       }
     ];
     
